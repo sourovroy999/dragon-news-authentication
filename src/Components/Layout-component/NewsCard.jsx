@@ -1,9 +1,10 @@
 import { FaRegEye } from "react-icons/fa";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { FaStarHalfStroke } from "react-icons/fa6";
+import { Link } from "react-router";
 
 const NewsCard = ({ news }) => {
-  const { author, title, thumbnail_url, details, rating, total_view } = news;
+  const {_id, author, title, thumbnail_url, details, rating, total_view } = news;
 
   // Dynamic star generation
   const renderStars = () => {
@@ -49,7 +50,7 @@ const NewsCard = ({ news }) => {
       <div className="p-4">
         <p className="text-sm text-gray-600">
           {details.length > 100 ? details.slice(0, 100) + "..." : details}
-          <span className="text-blue-500 font-semibold cursor-pointer"> Read More</span>
+          <Link to={`/news/${_id}`} className="text-blue-500 font-semibold cursor-pointer"> Read More</Link>
         </p>
       </div>
 
