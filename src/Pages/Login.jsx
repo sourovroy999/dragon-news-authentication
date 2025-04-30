@@ -1,10 +1,14 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { Form, Link, useLocation, useNavigate } from 'react-router';
-import { authContext } from '../Provider/AuthProvider';
+import {  authContext } from '../Provider/AuthProvider';
+// import { sendPasswordResetEmail } from 'firebase/auth';
 
 const Login = () => {
 
-    const {signIn,setUser}=useContext(authContext)
+    const emailRef=useRef()
+
+
+    const {signIn,setUser,resetPassword}=useContext(authContext)
     const[error,setError]=useState({});
     const location=useLocation();
     // console.log(location);
@@ -18,15 +22,53 @@ const Login = () => {
         const password=form.get('password')
         // console.log(email, password);
         signIn(email,password)
+        
+        
         .then((result)=>{
             const user= result.user;
-            setUser(user)
+            if(!result.user.emailVerified){
+                alert('Please verified your email')
+            }
+            else{
+                setUser(user)
             navigate(location?.state ? location.state : '/' )
-
-        })
+            }
+       })
         .catch((err)=>{
             setError({...error, login:err.code})
         })
+
+        
+    }
+
+    
+    const handleForgetPassword=()=>{
+        console.log('forget password clicked');
+        // navigate('/recoverPassword')
+
+        const email=emailRef.current.value;
+        console.log(email);
+
+        if(!email){
+            alert('Please Provide a valid email')
+        }
+        else(
+
+        resetPassword(email)
+        
+         .then(()=>{
+        alert("Password reset email sent")
+        
+       })
+       .catch((err)=>{
+        const errorCode=err.code;
+        const errorMessage=err.message;
+        console.log(errorCode, errorMessage);
+        alert(errorMessage)
+        
+       })
+        
+    )
         
     }
 
@@ -40,7 +82,7 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="fieldset">
           <label className="label font-bold">Enter your email address</label>
-          <input name='email' type="email" className="input" placeholder="Email" />
+          <input ref={emailRef} name='email' type="email" className="input" placeholder="Email" />
           <label className="label font-bold">Enter Your Password</label>
           <input required name='password' type="password" className="input" placeholder="Password" />
 
@@ -52,7 +94,7 @@ const Login = () => {
             )
         }
 
-          <div><a className="link link-hover">Forgot password?</a></div>
+          <div><a onClick={handleForgetPassword} className="link link-hover">Forgot password?</a></div>
           <button className="btn btn-neutral mt-4">Login</button>
         </form>
 

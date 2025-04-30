@@ -22,7 +22,7 @@ const Nav = () => {
             <div className='login'>
                 <div className='flex gap-2 items-center'>
                     {
-                        user && user?.email ? <div className='flex items-center gap-2'><img className='w-10 h-10 object-cover rounded-full' src={user?.photoURL} alt="" />
+                        user && user?.email ? <div className='flex items-center gap-2'><img className='w-10 h-10 object-cover rounded-full' src={user?.photoURL ? user?.photoURL : userIcon} alt="" />
                         <p className='font-bold'>{user.displayName}</p>
                         </div> : <img src={userIcon}/> 
                     }

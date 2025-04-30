@@ -1,11 +1,12 @@
 import { createContext, useEffect, useState } from "react";
-import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import app from "../Firebase/Firebase.config";
 
 export const authContext=createContext(null)
 const googleProvider=new GoogleAuthProvider();
 const GitHubProvider=new GithubAuthProvider()
 
+const auth=getAuth(app)
 
 const AuthProvider = ({children}) => {
 
@@ -14,26 +15,30 @@ const AuthProvider = ({children}) => {
 
     // console.log(loading,user);
     
-    const auth=getAuth(app)
 
     const createUser=(email, password)=>{
-        setLoading(true)
+         setLoading(true)
        return createUserWithEmailAndPassword(auth, email, password)
+     }
 
-       
-    }
-
-    const signIn=(email, password)=>{
+   
+    const signIn=(email, password)=>{ 
+        
         setLoading(true)
        return signInWithEmailAndPassword(auth,email,password)
+       
     }
 
 
     const googleSignIn=()=>{
+        setLoading(true)
+
         return signInWithPopup(auth, googleProvider)
     }
 
     const GitHubSignIn=()=>{
+        setLoading(true)
+
         return signInWithPopup(auth, GitHubProvider)
     }
 
@@ -50,8 +55,21 @@ const AuthProvider = ({children}) => {
         })
     }
 
+    // sendEmailVerification(auth.currentUser)
+    // .then(console.log('verification email sent')
+    // )
+
+
+    const sendVerificationEmail=()=>{
+        return sendEmailVerification(auth.currentUser)
+    }
+
     const updateUserProfile=(updatedData)=>{
         return updateProfile(auth.currentUser, updatedData)
+    }
+
+    const resetPassword=(email)=>{
+       return sendPasswordResetEmail(auth, email)
     }
 
     const authInfo={
@@ -64,6 +82,9 @@ const AuthProvider = ({children}) => {
         updateUserProfile,
         googleSignIn,
         GitHubSignIn,
+        sendVerificationEmail,
+        resetPassword,
+
 
     }
 

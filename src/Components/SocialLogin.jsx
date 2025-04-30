@@ -9,6 +9,8 @@ const SocialLogin = () => {
             googleSignIn()
             .then(result=>{
                 console.log(result.user);
+            setUser(result.user)
+
                 
             })
             .catch(error=>{
@@ -21,8 +23,6 @@ const SocialLogin = () => {
         GitHubSignIn()
         .then(result=>{
             console.log(result.user);
-            setUser(result.user)
-            // updateUserProfile({displayName:result.user, photoURL:result.photoURL})
             
         })
         .catch(error=>{

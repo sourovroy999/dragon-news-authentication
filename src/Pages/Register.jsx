@@ -2,34 +2,79 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { authContext } from '../Provider/AuthProvider';
 import { Navigate } from 'react-router';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Register = () => {
+    const[showPassword, setShowPassword]=useState(false)
 
-const {createUser, setUser,updateUserProfile}=useContext(authContext)
+
+const {createUser, setUser,updateUserProfile,sendVerificationEmail}=useContext(authContext)
 const navigate=useNavigate()
-const[error, setError]=useState({})
-    const handleSubmit=(e)=>{
+const[error, setError]=useState('')
+const[emailError, setEmailError]=useState('')
+const[passwordError, setPasswordError]=useState('')
 
+const handleSubmit=(e)=>{
+        // const auth=getAuth(app)
+
+        
         e.preventDefault();
         //get form data
         const form=new FormData(e.target);
         const name=form.get('name')
+        
         if(name.length<5){
             setError({ ...error, name:'must be more than 5 character'})
             return
         }
+        setError('')
+        
         const email=form.get('email')
         const photo=form.get('photo')
         const password=form.get('password')
+        const confirmPassword=form.get('confirmPassword')
+        const terms=form.get('terms')
+
+
+
         // console.log({name,email,photo, password});
+        // console.log(password,confirmPassword);
+
+        if(!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)){
+            setEmailError('Please Use Gmail')
+            return
+        }
+        setEmailError('')
+       
+        if(password !== confirmPassword){
+            setPasswordError("Password didn't Match ")
+            return
+        }
+        setPasswordError('')
+        if(password.length<6){
+            setError({...error, password:'Password should be greater than 6'})
+            return
+        }
+        setError('')
+
+        if(!terms){
+            setError({...error, terms:'Accept Our Terms to Continue'})
+            return
+        }
 
         createUser(email, password)
         .then((result)=>{
+
             const user=result.user;
+
+
             
             setUser(user)
+
             updateUserProfile({displayName:name, photoURL:photo})
             .then(()=>{
+            sendVerificationEmail()
+                
                 navigate('/')
             })
             .catch((err)=>{
@@ -44,6 +89,7 @@ const[error, setError]=useState({})
             console.log(errorCode, errorMessage);
             
         })
+       
         
         
         
@@ -63,7 +109,7 @@ const[error, setError]=useState({})
             <fieldset className="fieldset">
 
               <label className="label font-bold">Enter your name</label>
-              <input name='name' type="text" className="input" placeholder="Email" />
+              <input name='name' type="text" className="input" placeholder="Name" />
               {
                 error.name && <label className="label text-xs text-red-500">
                     {error.name}
@@ -75,16 +121,81 @@ const[error, setError]=useState({})
 
 
 
-              <label className="label font-bold">Enter your email address</label>
+           <label className="label font-bold">Enter your email address</label>
               <input name='email' type="email" className="input" placeholder="Email" />
+              {
+                emailError && <label className="label text-xs text-red-500">
+                {emailError}
+            </label>
+              }
 
-              <label className="label font-bold">Enter Your Password</label>
-              <input name='password' type="password" className="input" placeholder="Password" />
+              <label className="label font-bold">Enter your password</label>
+
+   
+     <label className="input input-bordered flex items-center gap-2">
+            
+         
+          <input
+            type={showPassword? "text": "password"}
+            name="password"
+            className="grow"
+            placeholder="password"
+          />
+          <button onClick={()=>setShowPassword(!showPassword)}
+            
+            className="btn btn-xs "
+          >
+            {showPassword? <FaEyeSlash/> : <FaEye/>}
+            
+          </button>
+        </label>
+   
+   {/* confirm password */}
+        <label className="label font-bold">Confirm your password</label>
+
+     <label className="input input-bordered flex items-center gap-2">
+            
+         
+          <input
+            type={showPassword? "text": "password"}
+            name="confirmPassword"
+            className="grow"
+            placeholder="confirm password"
+          />
+          <button onClick={()=>setShowPassword(!showPassword)}
+            
+            className="btn btn-xs "
+          >
+            {showPassword? <FaEyeSlash/> : <FaEye/>}
+            
+          </button>
+        </label>
+        {
+            error.password && <label className="label text-xs text-red-500">
+            {error.password}
+        </label>
+        }
+        {
+            passwordError? <label className="label text-xs text-red-500">
+            Password didn't Match
+        </label>:''
+        }
+         
+         {
+            error.terms && <label className="label text-xs text-red-500">
+            {error.terms}
+        </label>
+        }
+              
               
               <div className='flex items-center gap-2 mt-3'>
-              <input type="checkbox" defaultChecked className="checkbox" />
+              <input name='terms' type="checkbox" className="checkbox" />
               <p>Accept Our Terms And Conditions</p>
               </div>
+
+              {/* {
+                    error && <small className='text-red-500'>{error}</small>
+                } */}
               
 
               <button className="btn btn-neutral mt-4">Register</button>
