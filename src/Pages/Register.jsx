@@ -5,7 +5,7 @@ import { Navigate } from 'react-router';
 
 const Register = () => {
 
-const {createUser, user, setUser,updateUserProfile}=useContext(authContext)
+const {createUser, setUser,updateUserProfile}=useContext(authContext)
 const navigate=useNavigate()
 const[error, setError]=useState({})
     const handleSubmit=(e)=>{
