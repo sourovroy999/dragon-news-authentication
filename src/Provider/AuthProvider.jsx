@@ -93,6 +93,7 @@ const AuthProvider = ({children}) => {
             setUser(currentUser);
             setLoading(false)
         })
+        // unmount
         return ()=>{
             unSubscribe()
         }
